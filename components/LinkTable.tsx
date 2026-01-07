@@ -14,10 +14,10 @@ const LinkTable: React.FC<LinkTableProps> = ({
   onSort
 }) => {
   const getSortIcon = (key: string) => {
-    if (sortConfig.key !== key) return <i className="fa-solid fa-sort opacity-30 ml-2"></i>;
-    if (sortConfig.direction === 'asc') return <i className="fa-solid fa-sort-up ml-2 text-emerald-600"></i>;
-    if (sortConfig.direction === 'desc') return <i className="fa-solid fa-sort-down ml-2 text-emerald-600"></i>;
-    return <i className="fa-solid fa-sort opacity-30 ml-2"></i>;
+    if (sortConfig.key !== key) return <i className="fa-solid fa-sort opacity-30 mr-2"></i>;
+    if (sortConfig.direction === 'asc') return <i className="fa-solid fa-sort-up mr-2 text-emerald-600"></i>;
+    if (sortConfig.direction === 'desc') return <i className="fa-solid fa-sort-down mr-2 text-emerald-600"></i>;
+    return <i className="fa-solid fa-sort opacity-30 mr-2"></i>;
   };
 
   return (
@@ -26,43 +26,28 @@ const LinkTable: React.FC<LinkTableProps> = ({
         <table className="w-full text-right border-collapse">
           <thead>
             <tr className="bg-gray-50/80 border-b border-gray-100 select-none">
-              <th 
-                className="px-6 py-4 font-bold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => onSort('region')}
-              >
-                <div className="flex items-center">
-                  {getSortIcon('region')}
-                  المنطقة
-                </div>
+              <th className="px-4 py-5 font-bold text-gray-400 text-xs text-center w-16">
+                #
               </th>
               <th 
-                className="px-6 py-4 font-bold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => onSort('quadkey')}
-              >
-                <div className="flex items-center">
-                  {getSortIcon('quadkey')}
-                  رمز Quadkey
-                </div>
-              </th>
-              <th 
-                className="px-6 py-4 font-bold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
+                className="px-6 py-5 font-bold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => onSort('sizeBytes')}
               >
                 <div className="flex items-center">
-                  {getSortIcon('sizeBytes')}
                   حجم الملف
+                  {getSortIcon('sizeBytes')}
                 </div>
               </th>
-              <th className="px-6 py-4 font-bold text-gray-700 text-sm text-center">
+              <th className="px-8 py-5 font-bold text-gray-700 text-sm text-center">
                 التحميل المباشر
               </th>
               <th 
-                className="px-6 py-4 font-bold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
+                className="px-8 py-5 font-bold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors text-left"
                 onClick={() => onSort('date')}
               >
-                <div className="flex items-center">
+                <div className="flex items-center justify-end">
+                  تاريخ التحديث
                   {getSortIcon('date')}
-                  التحديث
                 </div>
               </th>
             </tr>
@@ -73,46 +58,39 @@ const LinkTable: React.FC<LinkTableProps> = ({
                 key={`${link.quadkey}-${idx}`} 
                 className="hover:bg-emerald-50/20 transition-colors group"
               >
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-4 py-5 whitespace-nowrap text-center text-gray-400 font-mono text-xs">
+                  {idx + 1}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-600"></span>
-                    <span className="text-gray-900 font-medium">{link.region}</span>
+                    <i className="fa-solid fa-file-csv text-emerald-500"></i>
+                    <span className={`font-bold text-lg ${parseFloat(link.size) > 10 ? 'text-amber-600' : 'text-gray-700'}`}>
+                      {link.size}
+                    </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded text-xs border border-gray-200">
-                    {link.quadkey}
-                  </span>
+                <td className="px-8 py-5 text-center">
+                  <a 
+                    href={link.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 px-6 py-3 bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
+                  >
+                    <i className="fa-solid fa-cloud-arrow-down"></i>
+                    تحميل الملف (CSV.GZ)
+                  </a>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`font-bold ${parseFloat(link.size) > 10 ? 'text-red-600' : 'text-gray-600'}`}>
-                    {link.size}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                    <a 
-                      href={link.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold text-[12px] transition-all shadow-sm active:scale-95"
-                    >
-                      <i className="fa-solid fa-cloud-arrow-down"></i>
-                      تحميل CSV.GZ
-                    </a>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-500 text-[10px]">
+                <td className="px-8 py-5 whitespace-nowrap text-gray-500 text-sm text-left font-mono">
                   {link.date}
                 </td>
               </tr>
             ))}
             {links.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-20 text-center text-gray-400">
+                <td colSpan={4} className="px-6 py-20 text-center text-gray-400">
                   <div className="flex flex-col items-center">
-                    <i className="fa-solid fa-magnifying-glass text-5xl mb-4 opacity-20"></i>
-                    <p className="text-lg">لا توجد بيانات تطابق بحثك حالياً</p>
+                    <i className="fa-solid fa-inbox text-5xl mb-4 opacity-20"></i>
+                    <p className="text-lg">لا توجد ملفات متوفرة حالياً</p>
                   </div>
                 </td>
               </tr>

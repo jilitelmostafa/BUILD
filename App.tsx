@@ -11,7 +11,6 @@ type SortConfig = {
 };
 
 const App: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'sizeBytes', direction: null });
   
   const allLinks = useMemo(() => parseData(), []);
@@ -27,11 +26,8 @@ const App: React.FC = () => {
     return num;
   };
   
-  const filteredLinks = useMemo(() => {
-    let result = allLinks.filter(link => 
-      link.quadkey.includes(searchTerm) || 
-      link.region.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const sortedLinks = useMemo(() => {
+    let result = [...allLinks];
 
     if (sortConfig.direction !== null) {
       result.sort((a, b) => {
@@ -51,7 +47,7 @@ const App: React.FC = () => {
     }
 
     return result;
-  }, [allLinks, searchTerm, sortConfig]);
+  }, [allLinks, sortConfig]);
 
   const requestSort = (key: keyof LinkItem | 'sizeBytes') => {
     let direction: 'asc' | 'desc' | null = 'asc';
@@ -64,36 +60,22 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col pb-12 bg-slate-50">
+    <div className="min-h-screen flex flex-col pb-12 bg-slate-50 text-right" dir="rtl">
       <Header />
       
       <main className="container mx-auto px-4 -mt-10 relative z-20">
-        <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 mb-8">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            <div className="relative w-full">
-              <span className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
-                <i className="fa-solid fa-magnifying-glass"></i>
-              </span>
-              <input
-                type="text"
-                placeholder="ابحث بواسطة الرمز (Quadkey) أو المنطقة..."
-                className="w-full pr-12 pl-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-gray-700 font-medium"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+        <div className="flex items-center gap-3 p-6 bg-emerald-50 border border-emerald-100 rounded-2xl mb-8 text-emerald-900 shadow-sm">
+          <i className="fa-solid fa-circle-info text-emerald-600 text-2xl"></i>
+          <div>
+            <h3 className="font-bold text-lg mb-1">تعليمات التحميل</h3>
+            <p className="text-sm opacity-90">
+              تفضل بتحميل ملفات بيانات المباني مباشرة من الجدول أدناه. يمكنك ترتيب الملفات حسب الحجم أو تاريخ التحديث.
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl mb-6 text-emerald-900 text-sm">
-          <i className="fa-solid fa-circle-info text-emerald-600 text-lg"></i>
-          <p>
-            تفضل بتحميل ملفات بيانات المباني مباشرة من الجدول أدناه. يمكنك النقر على عناوين الأعمدة لترتيب النتائج.
-          </p>
-        </div>
-
         <LinkTable 
-          links={filteredLinks} 
+          links={sortedLinks} 
           sortConfig={sortConfig}
           onSort={requestSort}
         />
