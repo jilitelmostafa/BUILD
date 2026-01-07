@@ -1,0 +1,5 @@
+{
+  "name": "Morocco Buildings Data Exporter",
+  "description": "A specialized tool for managing and downloading Moroccan building footprint data. Features include link management and the ability to export all entries as an organized ZIP archive containing individual TXT files for each dataset.",
+  "requestFramePermissions": []
+}
