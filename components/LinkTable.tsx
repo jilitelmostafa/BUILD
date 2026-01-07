@@ -4,23 +4,15 @@ import { LinkItem } from '../types';
 
 interface LinkTableProps {
   links: LinkItem[];
-  selectedIds: Set<string>;
-  onToggle: (id: string) => void;
-  onToggleAll: () => void;
   sortConfig: { key: string; direction: 'asc' | 'desc' | null };
   onSort: (key: any) => void;
 }
 
 const LinkTable: React.FC<LinkTableProps> = ({ 
   links, 
-  selectedIds, 
-  onToggle, 
-  onToggleAll,
   sortConfig,
   onSort
 }) => {
-  const isAllSelected = links.length > 0 && links.every(link => selectedIds.has(link.quadkey));
-
   const getSortIcon = (key: string) => {
     if (sortConfig.key !== key) return <i className="fa-solid fa-sort opacity-30 ml-2"></i>;
     if (sortConfig.direction === 'asc') return <i className="fa-solid fa-sort-up ml-2 text-emerald-600"></i>;
@@ -34,16 +26,6 @@ const LinkTable: React.FC<LinkTableProps> = ({
         <table className="w-full text-right border-collapse">
           <thead>
             <tr className="bg-gray-50/80 border-b border-gray-100 select-none">
-              <th className="px-4 py-4 w-12 text-center">
-                <div className="flex justify-center">
-                  <input 
-                    type="checkbox" 
-                    checked={isAllSelected}
-                    onChange={onToggleAll}
-                    className="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500 cursor-pointer"
-                  />
-                </div>
-              </th>
               <th 
                 className="px-6 py-4 font-bold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => onSort('region')}
@@ -89,19 +71,8 @@ const LinkTable: React.FC<LinkTableProps> = ({
             {links.map((link, idx) => (
               <tr 
                 key={`${link.quadkey}-${idx}`} 
-                className={`hover:bg-emerald-50/20 transition-colors group ${selectedIds.has(link.quadkey) ? 'bg-emerald-50/40' : ''}`}
-                onClick={() => onToggle(link.quadkey)}
+                className="hover:bg-emerald-50/20 transition-colors group"
               >
-                <td className="px-4 py-4 text-center" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex justify-center">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedIds.has(link.quadkey)}
-                      onChange={() => onToggle(link.quadkey)}
-                      className="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500 cursor-pointer"
-                    />
-                  </div>
-                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-600"></span>
@@ -118,13 +89,13 @@ const LinkTable: React.FC<LinkTableProps> = ({
                     {link.size}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-center" onClick={(e) => e.stopPropagation()}>
+                <td className="px-6 py-4 text-center">
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
                     <a 
                       href={link.url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg font-bold text-[11px] transition-all border border-emerald-100 whitespace-nowrap shadow-sm"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold text-[12px] transition-all shadow-sm active:scale-95"
                     >
                       <i className="fa-solid fa-cloud-arrow-down"></i>
                       تحميل CSV.GZ
@@ -138,7 +109,7 @@ const LinkTable: React.FC<LinkTableProps> = ({
             ))}
             {links.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-20 text-center text-gray-400">
+                <td colSpan={5} className="px-6 py-20 text-center text-gray-400">
                   <div className="flex flex-col items-center">
                     <i className="fa-solid fa-magnifying-glass text-5xl mb-4 opacity-20"></i>
                     <p className="text-lg">لا توجد بيانات تطابق بحثك حالياً</p>

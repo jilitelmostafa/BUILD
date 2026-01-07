@@ -13,14 +13,25 @@ const Header: React.FC = () => {
 
       <div className="container mx-auto px-4 py-12 relative z-10 flex flex-col items-center text-center">
         <div className="bg-white/10 p-4 rounded-full mb-6 backdrop-blur-md border border-white/20">
-          <i className="fa-solid fa-building-circle-check text-5xl text-yellow-400"></i>
+          <i className="fa-solid fa-layer-group text-5xl text-yellow-400"></i>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg tracking-tight">
-          بيانات مباني المملكة المغربية
+        <h1 className="text-3xl md:text-5xl font-extrabold mb-4 drop-shadow-lg tracking-tight leading-tight">
+          Global ML Building Footprints Data With Estimated Height
         </h1>
-        <p className="text-lg md:text-xl font-medium max-w-2xl opacity-90">
-          منصة متكاملة لإدارة وتحميل روابط خرائط المباني الحديثة (Quadkeys) المخصصة للمغرب.
-        </p>
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-lg font-medium opacity-90">
+            بيانات خرائط المباني للمملكة المغربية
+          </p>
+          <a 
+            href="https://public.tableau.com/app/profile/rod.sardari/viz/GlobalMLBuildingFootprintsDataWithEstimatedHeight/GlobalMLBuildingFootprints"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm bg-black/20 hover:bg-black/40 px-4 py-1 rounded-full transition-colors border border-white/10 flex items-center gap-2"
+          >
+            <i className="fa-solid fa-link text-xs"></i>
+            المصدر: Rod Sardari (Tableau)
+          </a>
+        </div>
       </div>
       
       {/* Bottom Wave decoration */}
