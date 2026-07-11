@@ -1,316 +1,972 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Préparation Concours SRM</title>
+    <title>Grand Quiz de Préparation Concours SRM</title>
     <style>
         :root {
-            --primary-color: #2b6cb0;
-            --secondary-color: #2d3748;
-            --success-color: #48bb78;
-            --danger-color: #f56565;
-            --bg-color: #f7fafc;
+            --primary: #1e40af;
+            --secondary: #3b82f6;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--secondary-color);
-            line-height: 1.6;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
             margin: 0;
             padding: 20px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
-            color: var(--primary-color);
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
             margin-bottom: 30px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Barre de Score Fixe */
+        .score-sticky-box {
+            position: sticky;
+            top: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            z-index: 1000;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .score-counter span {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin: 0 5px;
         }
 
         .section-title {
-            background-color: #edf2f7;
-            padding: 10px 15px;
-            border-left: 5px solid var(--primary-color);
-            margin-top: 30px;
+            background: #e2e8f0;
+            color: var(--primary);
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-top: 40px;
+            font-size: 1.3rem;
             font-weight: bold;
+            border-left: 6px solid var(--primary);
         }
 
         .question-card {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            transition: all 0.2s;
         }
 
         .question-text {
             font-weight: 600;
+            font-size: 1.1rem;
             margin-bottom: 15px;
+            color: #111827;
         }
 
-        .options-container {
+        .options-grid {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
         .option-btn {
-            background-color: #fff;
-            border: 1px solid #cbd5e0;
-            padding: 12px 15px;
-            border-radius: 4px;
-            cursor: pointer;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            padding: 14px 20px;
             text-align: left;
-            font-size: 15px;
-            transition: all 0.2s ease;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .option-btn:hover:not([disabled]) {
-            background-color: #ebf8ff;
-            border-color: #bee3f8;
+            background-color: #f0fdf4;
+            border-color: var(--secondary);
         }
 
         .option-btn.correct {
-            background-color: #c6f6d5 !important;
-            border-color: #48bb78 !important;
-            color: #22543d;
+            background-color: #d1fae5 !important;
+            border-color: var(--success) !important;
+            color: #065f46;
             font-weight: bold;
         }
 
         .option-btn.wrong {
-            background-color: #fed7d7 !important;
-            border-color: #f56565 !important;
-            color: #742a2a;
+            background-color: #fee2e2 !important;
+            border-color: var(--danger) !important;
+            color: #991b1b;
         }
 
         .solution-box {
             display: none;
             margin-top: 15px;
             padding: 15px;
-            background-color: #ebf8ff;
-            border-left: 4px solid var(--primary-color);
+            background-color: #eff6ff;
+            border-left: 4px solid var(--secondary);
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 0.95rem;
+            color: #1e3a8a;
         }
+
+        /* Bloc d'évaluation finale */
+        .evaluation-panel {
+            margin-top: 50px;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .evaluation-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .final-score-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .badge-eval {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .badge-excellent { background-color: var(--success); }
+        .badge-moyen { background-color: var(--warning); }
+        .badge-insuffisant { background-color: var(--danger); }
 
         .tips-box {
             margin-top: 40px;
-            background-color: #fffaf0;
-            border: 1px solid #feebc8;
-            border-left: 5px solid #dd6b20;
-            padding: 20px;
-            border-radius: 6px;
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 6px solid #d97706;
+            padding: 25px;
+            border-radius: 8px;
         }
 
         .tips-box h3 {
             margin-top: 0;
-            color: #dd6b20;
+            color: #b45309;
         }
 
-        .footer-note {
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+
+        .footer {
             text-align: center;
-            margin-top: 30px;
-            font-size: 18px;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 1.3rem;
             font-weight: bold;
-            color: var(--primary-color);
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Préparation Concours SRM</h1>
+    <h1>Grand QCM de Préparation : Concours SRM 2026</h1>
+    <div class="subtitle">Plateforme Interactive de Test & Évaluation Spéciale pour Loubna</div>
 
-    <div class="section-title">1. Hydraulique & Assainissement</div>
-    
+    <div class="score-sticky-box">
+        <div class="score-counter">Avancement : <span id="progress-text">0 / 62</span></div>
+        <div class="score-counter">Correctes : <span id="correct-text" style="background:#10b981;">0</span></div>
+        <div class="score-counter">Fausses : <span id="wrong-text" style="background:#ef4444;">0</span></div>
+    </div>
+
+    <div class="section-title">1. Systèmes d'Information Géographique (SIG) & Télédétection</div>
+
     <div class="question-card" id="q1">
-        <div class="question-text">Q1. Calcul du débit d'une conduite : Une conduite d'eau a un diamètre D = 400 mm et la vitesse d'écoulement de l'eau est de V = 1,5 m/s. Quel est le débit Q en litres par seconde (L/s) ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q1', 'A', false)">A) 94,2 L/s</button>
-            <button class="option-btn" onclick="checkAnswer('q1', 'B', true)">B) 188,4 L/s</button>
-            <button class="option-btn" onclick="checkAnswer('q1', 'C', false)">C) 75,3 L/s</button>
+        <div class="question-text">Q1. Quelle est la définition exacte du sigle SIG ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q1', 'A', true)">A) Système d'Information Géographique</button>
+            <button class="option-btn" onclick="check('q1', 'B', false)">B) Structure d'Information Géodésique</button>
+            <button class="option-btn" onclick="check('q1', 'C', false)">C) Système d'Indication Géoréférencée</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            La formule du débit est : Q = S × V<br>
-            La section de la conduite est : S = (π × D²) / 4 = (3,14 × 0,4²) / 4 = 0,1256 m²<br>
-            Donc : Q = 0,1256 × 1,5 = 0,1884 m³/s<br>
-            Conversion en litres par seconde (× 1000) : Q = 188,4 L/s.<br>
-            <strong>Réponse correcte : B</strong>
-        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> SIG signifie Système d'Information Géographique (GIS en anglais). C'est un système conçu pour collecter, stocker, analyser et afficher des données géospatiales.</div>
     </div>
 
     <div class="question-card" id="q2">
-        <div class="question-text">Q2. Temps de séjour hydraulique : Une station d'épuration reçoit un débit nominal de Q = 200 m³/h. Le bassin de décantation associé a un volume utile V = 600 m³. Quel est le temps de séjour (Ts) de l'eau dans ce bassin ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q2', 'A', false)">A) 2 heures</button>
-            <button class="option-btn" onclick="checkAnswer('q2', 'B', true)">B) 3 heures</button>
-            <button class="option-btn" onclick="checkAnswer('q2', 'C', false)">C) 4 heures</button>
+        <div class="question-text">Q2. Quel modèle de données représente l'espace sous forme d'une matrice de pixels (cellules) ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q2', 'A', false)">A) Le modèle Vecteur</button>
+            <button class="option-btn" onclick="check('q2', 'B', true)">B) Le modèle Raster</button>
+            <button class="option-btn" onclick="check('q2', 'C', false)">C) Le modèle Alphanumérique</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            Ts = Volume / Débit = 600 / 200 = 3 heures.<br>
-            <strong>Réponse correcte : B</strong>
-        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le modèle Raster découpe l'espace en une grille de cellules régulières (pixels). Chaque cellule contient une valeur représentant l'information (ex: altitude pour un MNT ou réflectance pour une image satellite).</div>
     </div>
 
-    <div class="section-title">2. Génie Civil & RDM</div>
-
     <div class="question-card" id="q3">
-        <div class="question-text">Q3. Contrainte de compression dans un poteau : Un poteau en béton armé de section carrée 30 cm × 30 cm supporte une charge axiale de compression N = 900 kN. Quelle est la contrainte normale (σ) subie par le béton en MPa ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q3', 'A', true)">A) 10 MPa</button>
-            <button class="option-btn" onclick="checkAnswer('q3', 'B', false)">B) 100 MPa</button>
-            <button class="option-btn" onclick="checkAnswer('q3', 'C', false)">C) 1 MPa</button>
+        <div class="question-text">Q3. Parmi les formats suivants, lequel est un format purement Vecteur ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q3', 'A', false)">A) TIFF</button>
+            <button class="option-btn" onclick="check('q3', 'B', false)">B) GeoTIFF</button>
+            <button class="option-btn" onclick="check('q3', 'C', true)">C) Shapefile (.shp)</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            La formule est : σ = N / S<br>
-            La section est : S = 0,3 m × 0,3 m = 0,09 m²<br>
-            L'effort normal en Newtons : N = 900 × 1000 = 900 000 N<br>
-            σ = 900 000 / 0,09 = 10 000 000 N/m² = 10 MPa (sachant que 1 MPa = 1 N/mm² = 10⁶ N/m²).<br>
-            <strong>Réponse correcte : A</strong>
-        </div>
+        <div class="solution-box"><strong>Solution : C</strong><br><strong>Explication :</strong> Le Shapefile (développé par ESRI) est le format vectoriel classique qui stocke des objets géométriques sous forme de points, lignes ou polygones. TIFF et GeoTIFF servent au stockage d'images (Raster).</div>
     </div>
 
     <div class="question-card" id="q4">
-        <div class="question-text">Q4. Moment fléchissant maximum : Une poutre simplement appuyée sur deux supports, d'une longueur L = 6 m, supporte une charge uniformément répartie q = 20 kN/m. Quel est le moment fléchissant maximum (Mmax) au milieu de la poutre ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q4', 'A', false)">A) 60 kN·m</button>
-            <button class="option-btn" onclick="checkAnswer('q4', 'B', true)">B) 90 kN·m</button>
-            <button class="option-btn" onclick="checkAnswer('q4', 'C', false)">C) 120 kN·m</button>
+        <div class="question-text">Q4. Une cellule d'un raster mesure 10m x 10m. Quelle est sa superficie en mètres carrés ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q4', 'A', false)">A) 10 m²</button>
+            <button class="option-btn" onclick="check('q4', 'B', true)">B) 100 m²</button>
+            <button class="option-btn" onclick="check('q4', 'C', false)">C) 1000 m²</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            La formule en RDM pour ce cas est : Mmax = (q × L²) / 8<br>
-            Mmax = (20 × 6²) / 8 = (20 × 36) / 8 = 720 / 8 = 90 kN·m.<br>
-            <strong>Réponse correcte : B</strong>
-        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Calcul :</strong> Superficie d'une cellule carrée = Côté × Côté = 10 m × 10 m = 100 m².</div>
     </div>
-
-    <div class="section-title">3. Environnement & Traitement des Eaux</div>
 
     <div class="question-card" id="q5">
-        <div class="question-text">Q5. Calcul de la dose de chlore (Désinfection) : Pour désinfecter un réservoir d'eau potable d'un volume V = 5000 m³, la dose de chlore requise est fixée à 1,2 mg/L. Quelle masse de chlore pur faut-il injecter en kilogrammes (kg) ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q5', 'A', true)">A) 6 kg</button>
-            <button class="option-btn" onclick="checkAnswer('q5', 'B', false)">B) 60 kg</button>
-            <button class="option-btn" onclick="checkAnswer('q5', 'C', false)">C) 0,6 kg</button>
+        <div class="question-text">Q5. Quel système de coordonnées géodésiques historique est traditionnellement utilisé au Maroc ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q5', 'A', true)">A) Merchich</button>
+            <button class="option-btn" onclick="check('q5', 'B', false)">B) WGS84</button>
+            <button class="option-btn" onclick="check('q5', 'C', false)">C) ED50</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            Relation : Masse = Concentration × Volume<br>
-            Sachant que 1 mg/L = 1 g/m³<br>
-            Masse en grammes = 1,2 g/m³ × 5000 m³ = 6000 g<br>
-            Conversion en kg : 6000 g = 6 kg.<br>
-            <strong>Réponse correcte : A</strong>
-        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Le système géodésique de Merchich a pour ellipsoïde de référence Clarke 1880 et son point fondamental est situé au Maroc (Merchich).</div>
     </div>
 
-    <div class="section-title">4. Systèmes d'Information Géographique (SIG)</div>
-
     <div class="question-card" id="q6">
-        <div class="question-text">Q6. Résolution spatiale et calcul de surface (Modèle Raster) : Une grille d'un Modèle Numérique de Terrain (MNT) possède une résolution spatiale de cellules de 5 mètres × 5 mètres. Après une analyse hydrologique, un bassin versant est délimité et s'étend sur exactement 40 000 pixels. Quelle est la surface de ce bassin versant en km² ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q6', 'A', true)">A) 1 km²</button>
-            <button class="option-btn" onclick="checkAnswer('q6', 'B', false)">B) 2 km²</button>
-            <button class="option-btn" onclick="checkAnswer('q6', 'C', false)">C) 0,2 km²</button>
+        <div class="question-text">Q6. Quel est le nouveau système géodésique officiel du Maroc adopté pour moderniser les réseaux ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q6', 'A', false)">A) NAD83</button>
+            <button class="option-btn" onclick="check('q6', 'B', true)">B) RGM04</button>
+            <button class="option-btn" onclick="check('q6', 'C', false)">C) NTF</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            Superficie d'un seul pixel = 5 m × 5 m = 25 m²<br>
-            Superficie totale en mètres carrés = 40 000 × 25 = 1 000 000 m²<br>
-            Conversion en kilomètres carrés (÷ 1 000 000) : 1 000 000 m² = 1 km².<br>
-            <strong>Réponse correcte : A</strong>
-        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le RGM04 (Réseau Géodésique du Maroc 2004) est le système officiel de référence moderne tridimensionnel, compatible avec les technologies GPS/GNSS (ellipsoïde ITRF/WGS84).</div>
     </div>
 
     <div class="question-card" id="q7">
-        <div class="question-text">Q7. Analyse de zone tampon (Buffer Zone) : Dans le SIG d'un réseau de distribution, une zone de servitude (Buffer) de 20 mètres de largeur totale (10 m de chaque côté) est générée autour d'une conduite rectiligne d'une longueur de 2 km. Quelle est la superficie de cette zone tampon en hectares (ha) ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q7', 'A', true)">A) 4 hectares</button>
-            <button class="option-btn" onclick="checkAnswer('q7', 'B', false)">B) 40 hectares</button>
-            <button class="option-btn" onclick="checkAnswer('q7', 'C', false)">C) 0,4 hectare</button>
+        <div class="question-text">Q7. Quelle projection cartographique est utilisée au Maroc pour diviser le pays en zones du nord au sud ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q7', 'A', true)">A) Lambert Conforme Conique</button>
+            <button class="option-btn" onclick="check('q7', 'B', false)">B) Mercator Transverse (UTM)</button>
+            <button class="option-btn" onclick="check('q7', 'C', false)">C) Cylindrique simple</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            Largeur totale de la zone = 20 m<br>
-            Longueur en mètres = 2 km = 2000 m<br>
-            Superficie en mètres carrés = 2000 × 20 = 40 000 m²<br>
-            Sachant que 1 hectare = 10 000 m²<br>
-            Superficie en hectares = 40 000 / 10 000 = 4 ha.<br>
-            <strong>Réponse correcte : A</strong>
-        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Le Maroc utilise la projection de Lambert (Conique Conforme) découpée en 4 zones principales (I, II, III, IV) et une zone spéciale Sud pour minimiser les altérations linéaires.</div>
     </div>
 
     <div class="question-card" id="q8">
-        <div class="question-text">Q8. Densité linéaire du réseau : Sur une commune sectorisée, la longueur totale du réseau d'eau potable modélisée dans le SIG est de L = 5 km. Le nombre total de points d'abonnés (noeuds de branchement) intersectant ce réseau est de 2500. Quelle est la densité linéaire des abonnés ?</div>
-        <div class="options-container">
-            <button class="option-btn" onclick="checkAnswer('q8', 'A', true)">A) 500 abonnés/km</button>
-            <button class="option-btn" onclick="checkAnswer('q8', 'B', false)">B) 250 abonnés/km</button>
-            <button class="option-btn" onclick="checkAnswer('q8', 'C', false)">C) 1250 abonnés/km</button>
+        <div class="question-text">Q8. Quelle zone de la projection Lambert Maroc couvre l'axe économique Casablanca-Settat et Rabat ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q8', 'A', true)">A) Zone I</button>
+            <button class="option-btn" onclick="check('q8', 'B', false)">B) Zone II</button>
+            <button class="option-btn" onclick="check('q8', 'C', false)">C) Zone III</button>
         </div>
-        <div class="solution-box">
-            <strong>Solution et Calcul :</strong><br>
-            Densité linéaire = Nombre d'abonnés / Longueur totale = 2500 / 5 = 500 abonnés/km.<br>
-            <strong>Réponse correcte : A</strong>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> La Zone I (appelée Zone Nord) est centrée sur la latitude 33°30' N, couvrant parfaitement le Nord du Royaume dont Rabat et Casablanca.</div>
+    </div>
+
+    <div class="question-card" id="q9">
+        <div class="question-text">Q9. Sur une carte au 1/2000, combien de mètres réels représentent 5 cm mesurés sur le plan ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q9', 'A', false)">A) 10 mètres</button>
+            <button class="option-btn" onclick="check('q9', 'B', true)">B) 100 mètres</button>
+            <button class="option-btn" onclick="check('q9', 'C', false)">C) 1000 mètres</button>
         </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Calcul :</strong> distance réelle = distance sur plan × dénominateur de l'échelle = 5 cm × 2000 = 10 000 cm = 100 mètres.</div>
+    </div>
+
+    <div class="question-card" id="q10">
+        <div class="question-text">Q10. Qu'est-ce qu'un "Dangle" ou nœud pendant dans la topologie d'un réseau d'eau SIG ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q10', 'A', false)">A) Une conduite en double couche</button>
+            <button class="option-btn" onclick="check('q10', 'B', true)">B) Une extrémité de conduite déconnectée (non accrochée)</button>
+            <button class="option-btn" onclick="check('q10', 'C', false)">C) Une erreur d'attribut</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Un nœud pendant désigne une ligne qui n'est connectée à aucune autre entité à son extrémité. En réseau d'eau, cela peut correspondre à une erreur de saisie (sous-tirage/dépassement lors de la numérisation).</div>
+    </div>
+
+    <div class="question-card" id="q11">
+        <div class="question-text">Q11. Quelle opération SIG permet de découper une couche géographique selon les limites strictes d'une autre couche ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q11', 'A', true)">A) Clip (Découper)</button>
+            <button class="option-btn" onclick="check('q11', 'B', false)">B) Buffer (Zone tampon)</button>
+            <button class="option-btn" onclick="check('q11', 'C', false)">C) Merge (Fusionner)</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> L'outil 'Clip' agit comme un emporte-pièce géométrique. Il extrait les entités de la couche d'entrée qui intersectent la géométrie de la couche de découpage.</div>
+    </div>
+
+    <div class="question-card" id="q12">
+        <div class="question-text">Q12. Quelle extension de fichier rassemble la table attributaire associée à un fichier de géométrie .shp ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q12', 'A', false)">A) .shx</button>
+            <button class="option-btn" onclick="check('q12', 'B', true)">B) .dbf</button>
+            <button class="option-btn" onclick="check('q12', 'C', false)">C) .prj</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Un Shapefile est composé au minimum de trois fichiers : le .shp (géométrie), le .shx (index de géométrie) et le .dbf (table attributaire au format dBase).</div>
+    </div>
+
+    <div class="question-card" id="q13">
+        <div class="question-text">Q13. Que contient spécifiquement un fichier d'extension .prj dans un dossier Shapefile ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q13', 'A', false)">A) L'index spatial</button>
+            <button class="option-btn" onclick="check('q13', 'B', false)">B) La géométrie</button>
+            <button class="option-btn" onclick="check('q13', 'C', true)">C) Les informations du système de projection</button>
+        </div>
+        <div class="solution-box"><strong>Solution : C</strong><br><strong>Explication :</strong> Le fichier d'extension .prj contient les métadonnées de projection en format de texte WKT (Well-Known Text), indispensable pour caler la couche au bon endroit dans le logiciel SIG.</div>
+    </div>
+
+    <div class="question-card" id="q14">
+        <div class="question-text">Q14. Quelle est la fonction principale d'une "Jointure spatiale" dans un SIG ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q14', 'A', true)">A) Transférer les attributs d'une couche à une autre selon leur position géographique</button>
+            <button class="option-btn" onclick="check('q14', 'B', false)">B) Connecter deux conduites d'eau par un nœud</button>
+            <button class="option-btn" onclick="check('q14', 'C', false)">C) Convertir un raster en vecteur</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Contrairement à la jointure attributaire classique (basée sur une clé commune), la jointure spatiale lie les tables de deux couches selon leur relation topologique (contenance, intersection, proximité).</div>
+    </div>
+
+    <div class="question-card" id="q15">
+        <div class="question-text">Q15. Quel type de résolution indique la plus petite taille d'objet détectable au sol sur une image satellite ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q15', 'A', true)">A) Résolution spatiale</button>
+            <button class="option-btn" onclick="check('q15', 'B', false)">B) Résolution spectrale</button>
+            <button class="option-btn" onclick="check('q15', 'C', false)">C) Résolution temporelle</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> La résolution spatiale correspond à la taille du pixel au sol. Plus la taille du pixel est petite (ex: 30 cm), plus la résolution est dite haute.</div>
+    </div>
+
+    <div class="question-card" id="q16">
+        <div class="question-text">Q16. Quelle longueur d'onde du spectre électromagnétique est fortement réfléchie par la végétation saine (base du calcul NDVI) ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q16', 'A', false)">A) Le bleu</button>
+            <button class="option-btn" onclick="check('q16', 'B', true)">B) Le Proche Infrarouge (PIR)</button>
+            <button class="option-btn" onclick="check('q16', 'C', false)">C) Les rayons X</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Les cellules de la végétation saine réfléchissent fortement le rayonnement Proche Infrarouge (NIR) et absorbent le Rouge. C'est le principe fondamental de l'indice de végétation NDVI.</div>
+    </div>
+
+    <div class="section-title">2. Hydraulique & Assainissement</div>
+
+    <div class="question-card" id="q17">
+        <div class="question-text">Q17. Une conduite de diamètre D = 200 mm transporte de l'eau à une vitesse V = 2 m/s. Quel est son débit Q en Litres par seconde ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q17', 'A', true)">A) 62,8 L/s</button>
+            <button class="option-btn" onclick="check('q17', 'B', false)">B) 125,6 L/s</button>
+            <button class="option-btn" onclick="check('q17', 'C', false)">C) 31,4 L/s</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Calcul :</strong> Section S = $\frac{\pi \times D^2}{4} = \frac{3,14 \times 0,2^2}{4} = 0,0314\text{ m}^2$.<br>Débit $Q = S \times V = 0,0314 \times 2 = 0,0628\text{ m}^3\text{/s}$.<br>En litres par seconde : $0,0628 \times 1000 = 62,8\text{ L/s}$.</div>
+    </div>
+
+    <div class="question-card" id="q18">
+        <div class="question-text">Q18. Quelle formule classique exprime la relation de continuité pour un écoulement fluide permanent ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q18', 'A', false)">A) Q = S / V</button>
+            <button class="option-btn" onclick="check('q18', 'B', true)">B) Q = S × V</button>
+            <button class="option-btn" onclick="check('q18', 'C', false)">C) V = Q × S</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Pour un fluide incompressible, le volume traversant une section par unité de temps est constant : Débit (Q) = Section de la conduite (S) × Vitesse moyenne (V).</div>
+    </div>
+
+    <div class="question-card" id="q19">
+        <div class="question-text">Q19. Dans quel type d'écoulement l'eau circule-t-elle sous l'effet exclusif de la pente avec une surface libre en contact avec l'atmosphère ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q19', 'A', false)">A) Écoulement en charge</button>
+            <button class="option-btn" onclick="check('q19', 'B', true)">B) Écoulement à surface libre</button>
+            <button class="option-btn" onclick="check('q19', 'C', false)">C) Écoulement sous pression</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Un écoulement à surface libre possède une pression égale à la pression atmosphérique à sa surface supérieure (ex : canaux, rivières, collecteurs d'assainissement non saturés).</div>
+    </div>
+
+    <div class="question-card" id="q20">
+        <div class="question-text">Q20. Quel nombre adimensionnel permet de déterminer si un écoulement est laminaire ou turbulent ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q20', 'A', false)">A) Le nombre de Froude</button>
+            <button class="option-btn" onclick="check('q20', 'B', true)">B) Le nombre de Reynolds</button>
+            <button class="option-btn" onclick="check('q20', 'C', false)">C) Le coefficient de Manning</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le nombre de Reynolds ($Re$) fait le rapport entre les forces d'inertie et les forces visqueuses. C'est l'indicateur universel de régime d'écoulement.</div>
+    </div>
+
+    <div class="question-card" id="q21">
+        <div class="question-text">Q21. Si le nombre de Reynolds dans une conduite fermée est égal à 1500, comment qualifie-t-on l'écoulement ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q21', 'A', true)">A) Laminaire</button>
+            <button class="option-btn" onclick="check('q21', 'B', false)">B) Turbulent</button>
+            <button class="option-btn" onclick="check('q21', 'C', false)">C) Critique</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Pour un écoulement en conduite, si $Re < 2000$, l'écoulement est régulier et les filets de fluide glissent parallèlement : il est laminaire. Si $Re > 4000$, il devient turbulent.</div>
+    </div>
+
+    <div class="question-card" id="q22">
+        <div class="question-text">Q22. Comment appelle-t-on le phénomène de surpression brutale provoqué par l'arrêt instantané de l'écoulement (ex: fermeture de vanne) ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q22', 'A', false)">A) La cavitation</button>
+            <button class="option-btn" onclick="check('q22', 'B', true)">B) Le coup de bélier</button>
+            <button class="option-btn" onclick="check('q22', 'C', false)">C) Le ressaut hydraulique</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> L'énergie cinétique de l'eau se transforme brutalement en énergie de pression, créant une onde de choc qui se propage dans la conduite et peut la fissurer.</div>
+    </div>
+
+    <div class="question-card" id="q23">
+        <div class="question-text">Q23. Quel équipement hydraulique installe-t-on pour protéger une longue conduite de refoulement contre le coup de bélier ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q23', 'A', false)">A) Un clapet anti-retour simple</button>
+            <button class="option-btn" onclick="check('q23', 'B', true)">B) Un ballon anti-bélier (ou cheminée d'équilibre)</button>
+            <button class="option-btn" onclick="check('q23', 'C', false)">C) Une crépine</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le ballon anti-bélier contient une poche d'air qui amortit l'onde de choc de surpression ou de dépression en servant de réservoir tampon temporaire.</div>
+    </div>
+
+    <div class="question-card" id="q24">
+        <div class="question-text">Q24. Quelle équation fondamentale relie la pression, la vitesse et l'altitude en deux points d'une ligne de courant d'un fluide parfait ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q24', 'A', true)">A) Le théorème de Bernoulli</button>
+            <button class="option-btn" onclick="check('q24', 'B', false)">B) L'équation de Chézy</button>
+            <button class="option-btn" onclick="check('q24', 'C', false)">C) La loi de Darcy</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Le théorème de Bernoulli traduit le principe de conservation de l'énergie pour un fluide parfait : $z + \frac{P}{\rho g} + \frac{V^2}{2g} = \text{Constante}$.</div>
+    </div>
+
+    <div class="question-card" id="q25">
+        <div class="question-text">Q25. De quoi dépendent principalement les pertes de charge singulières dans un réseau ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q25', 'A', false)">A) De la longueur droite de la conduite</button>
+            <button class="option-btn" onclick="check('q25', 'B', true)">B) Des accidents géométriques de parcours (coudes, vannes, tés, réductions)</button>
+            <button class="option-btn" onclick="check('q25', 'C', false)">C) De la porosité du sol</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Les pertes de charge systématiques (linéaires) dépendent de la longueur et de la rugosité, tandis que les singulières sont causées par les perturbations locales de l'écoulement (pièces spéciales).</div>
+    </div>
+
+    <div class="question-card" id="q26">
+        <div class="question-text">Q26. Quel appareil sert à mesurer précisément la pression hydrodynamique en un point d'une conduite fermée ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q26', 'A', false)">A) Un débitmètre</button>
+            <button class="option-btn" onclick="check('q26', 'B', true)">B) Un manomètre</button>
+            <button class="option-btn" onclick="check('q26', 'C', false)">C) Un piézomètre ouvert uniquement</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le manomètre à aiguille ou numérique se branche directement sur la conduite pour donner la pression relative (souvent exprimée en Bars ou en MCA).</div>
+    </div>
+
+    <div class="question-card" id="q27">
+        <div class="question-text">Q27. Qu'est-ce qu'un système d'assainissement dit "Unitaire" ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q27', 'A', true)">A) Un réseau qui collecte les eaux usées et pluviales dans la même conduite</button>
+            <button class="option-btn" onclick="check('q27', 'B', false)">B) Un réseau séparant strictement les eaux usées des eaux pluviales</button>
+            <button class="option-btn" onclick="check('q27', 'C', false)">C) Une fosse septique individuelle</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Un réseau unitaire reçoit dans un unique collecteur les eaux usées d'origine domestique et les eaux de ruissellement pluvial.</div>
+    </div>
+
+    <div class="question-card" id="q28">
+        <div class="question-text">Q28. Quel ouvrage d'assainissement permet, lors d'un gros orage en réseau unitaire, de déverser le trop-plein d'eau diluée vers le milieu naturel ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q28', 'A', false)">A) Un regard de visite</button>
+            <button class="option-btn" onclick="check('q28', 'B', true)">B) Un déversoir d'orage</button>
+            <button class="option-btn" onclick="check('q28', 'C', false)">C) Une boîte de raccordement</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le déversoir d'orage évite l'engorgement des collecteurs aval et l'inondation de la STEP en dérivant le surplus d'eau d'orage diluée vers l'exutoire naturel.</div>
+    </div>
+
+    <div class="question-card" id="q29">
+        <div class="question-text">Q29. Quel paramètre hydraulique représenté par 'Rh' est défini par le rapport de la section mouillée sur le périmètre mouillé ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q29', 'A', false)">A) Le coefficient de rugosité</button>
+            <button class="option-btn" onclick="check('q29', 'B', true)">B) Le rayon hydraulique</button>
+            <button class="option-btn" onclick="check('q29', 'C', false)">C) La charge hydrostatique</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> $R_h = \frac{S}{P_m}$. C'est une dimension linéaire caractéristique utilisée dans les calculs d'écoulement à surface libre (formule de Manning-Strickler).</div>
+    </div>
+
+    <div class="question-card" id="q30">
+        <div class="question-text">Q30. Quelle est la vitesse minimale d'autocurage préconisée dans un collecteur d'assainissement gravitaire ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q30', 'A', false)">A) 0,1 m/s</button>
+            <button class="option-btn" onclick="check('q30', 'B', true)">B) 0,6 à 0,7 m/s</button>
+            <button class="option-btn" onclick="check('q30', 'C', false)">C) 3,0 m/s</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Une vitesse de 0,6 m/s à 0,7 m/s permet d'engendrer un cisaillement suffisant au fond du tuyau pour entraîner les sables et éviter l'envasement du collecteur.</div>
+    </div>
+
+    <div class="section-title">3. Génie Civil, RDM & Matériaux de Réseau</div>
+
+    <div class="question-card" id="q31">
+        <div class="question-text">Q31. Quelle est l'unité internationale de la contrainte mécanique en résistance des matériaux (RDM) ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q31', 'A', false)">A) Le Newton (N)</button>
+            <button class="option-btn" onclick="check('q31', 'B', true)">B) Le Pascal (Pa) ou MPa</button>
+            <button class="option-btn" onclick="check('q31', 'C', false)">C) Le Joule (J)</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> La contrainte est homogène à une pression (Force / Surface). L'unité SI est le Pascal. $1\text{ MPa} = 1\text{ N/mm}^2$.</div>
+    </div>
+
+    <div class="question-card" id="q32">
+        <div class="question-text">Q32. Quel matériau robuste est le plus classique pour les conduites maîtresses de distribution d'eau sous chaussée en zone urbaine ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q32', 'A', false)">A) Le PVC standard</button>
+            <button class="option-btn" onclick="check('q32', 'B', true)">B) La Fonte Ductile</button>
+            <button class="option-btn" onclick="check('q32', 'C', false)">C) Le Béton simple</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> La fonte ductile possède des propriétés mécaniques remarquables (élasticité, résistance aux chocs et écrasements dus au trafic routier lourd).</div>
+    </div>
+
+    <div class="question-card" id="q33">
+        <div class="question-text">Q33. Que signifie le sigle des tuyauteries en plastique PEHD ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q33', 'A', true)">A) Polyéthylène Haute Densité</button>
+            <button class="option-btn" onclick="check('q33', 'B', false)">B) Polymère Élastique Haute Durabilité</button>
+            <button class="option-btn" onclick="check('q33', 'C', false)">C) Pression Élevée Hydro-Dynamique</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Le Polyéthylène Haute Densité (PEHD) est un polymère thermoplastique très étanche et flexible, idéal pour le transport de fluides sous pression.</div>
+    </div>
+
+    <div class="question-card" id="q34">
+        <div class="question-text">Q34. Lors de la pose d'une canalisation en tranchée, quel est le but premier du lit de pose ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q34', 'A', false)">A) Stopper l'humidité du sol</button>
+            <button class="option-btn" onclick="check('q34', 'B', true)">B) Assurer une assise uniforme et stable pour éviter les flexions locales du tuyau</button>
+            <button class="option-btn" onclick="check('q34', 'C', false)">C) Faciliter la détection par radar</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le lit de pose régularise le fond de la tranchée en éliminant les points durs (cailloux) qui casseraient la conduite sous le poids du remblai.</div>
+    </div>
+
+    <div class="question-card" id="q35">
+        <div class="question-text">Q35. Quel type d'essai sur site fait-on pour valider l'absence de fuite d'un tronçon d'eau potable fraîchement posé ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q35', 'A', true)">A) L'épreuve hydraulique d'étanchéité sous pression</button>
+            <button class="option-btn" onclick="check('q35', 'B', false)">B) L'essai Proctor</button>
+            <button class="option-btn" onclick="check('q35', 'C', false)">C) L'essai de plaque</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> On remplit le tronçon d'eau et on applique une pression supérieure à la future pression de service pendant un temps donné pour inspecter la tenue des joints.</div>
+    </div>
+
+    <div class="question-card" id="q36">
+        <div class="question-text">Q36. Quel essai de géotechnique détermine l'optimum d'humidité pour compacter efficacement un remblai ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q36', 'A', false)">A) L'essai Los Angeles</button>
+            <button class="option-btn" onclick="check('q36', 'B', true)">B) L'essai Proctor</button>
+            <button class="option-btn" onclick="check('q36', 'C', false)">C) L'essai d'équivalent de sable</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> L'essai Proctor détermine la teneur en eau idéale permettant d'obtenir la densité sèche maximale d'un sol par compactage.</div>
+    </div>
+
+    <div class="question-card" id="q37">
+        <div class="question-text">Q37. Quelle est l'association de matériaux constituant le Béton Armé ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q37', 'A', false)">A) Du ciment et du liant bitumineux</button>
+            <button class="option-btn" onclick="check('q37', 'B', true)">B) Le béton (haute résistance à la compression) et des aciers (haute résistance à la traction)</button>
+            <button class="option-btn" onclick="check('q37', 'C', false)">C) Du mortier vibré avec des fibres de verre</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le béton résiste très bien à la compression mais casse facilement en traction. L'ajout d'armatures en acier compense cette faiblesse.</div>
+    </div>
+
+    <div class="question-card" id="q38">
+        <div class="question-text">Q38. Quelle structure installe-t-on au niveau des coudes d'une conduite sous pression pour bloquer le déboîtement causé par la force de poussée ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q38', 'A', true)">A) Un massif de butée en béton</button>
+            <button class="option-btn" onclick="check('q38', 'B', false)">B) Un regard d'aération</button>
+            <button class="option-btn" onclick="check('q38', 'C', false)">C) Un joint élastomère simple</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> La dynamique du fluide engendre une force de poussée vectorielle aux changements de direction. Le massif de butée transmet cette force au sol stable pour préserver l'assemblage.</div>
+    </div>
+
+    <div class="section-title">4. Qualité, Traitement des Eaux & Environnement</div>
+
+    <div class="question-card" id="q39">
+        <div class="question-text">Q39. Que mesure précisément l'indicateur environnemental DBO5 ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q39', 'A', false)">A) La demande brute en ozone</button>
+            <button class="option-btn" onclick="check('q39', 'B', true)">B) La Demande Biochimique en Oxygène nécessaire pour dégrader la matière organique en 5 jours</button>
+            <button class="option-btn" onclick="check('q39', 'C', false)">C) Le taux de bactéries anaérobies</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> La DBO5 quantifie les matières organiques biodégradables présentes dans l'eau en mesurant l'oxygène consommé par les bactéries en 5 jours à 20°C.</div>
+    </div>
+
+    <div class="question-card" id="q40">
+        <div class="question-text">Q40. Quel paramètre désigne la concentration globale de matières solides non dissoutes retenues par centrifugation ou filtrage ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q40', 'A', true)">A) MES (Matières En Suspension)</button>
+            <button class="option-btn" onclick="check('q40', 'B', false)">B) DCO</button>
+            <button class="option-btn" onclick="check('q40', 'C', false)">C) Turbidité seule</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Les MES désignent l'ensemble des solides suspendus (organiques ou minéraux) qui altèrent la clarté de l'eau.</div>
+    </div>
+
+    <div class="question-card" id="q41">
+        <div class="question-text">Q41. Quelle première étape physique en STEP intercepte les déchets volumineux à l'entrée ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q41', 'A', true)">A) Le dégrillage</button>
+            <button class="option-btn" onclick="check('q41', 'B', false)">B) Le dessablage</button>
+            <button class="option-btn" onclick="check('q41', 'C', false)">C) La décantation secondaire</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Le dégrillage retient mécaniquement les gros débris (chiffons, plastiques) pouvant obstruer les canalisations ou endommager les turbines de pompage.</div>
+    </div>
+
+    <div class="question-card" id="q42">
+        <div class="question-text">Q42. Quel traitement biologique classique exploite des bactéries libres en bassin aéré pour digérer les pollutions ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q42', 'A', false)">A) Le lit bactérien fixe</button>
+            <button class="option-btn" onclick="check('q42', 'B', true)">B) Les boues activées (cultures libres)</button>
+            <button class="option-btn" onclick="check('q42', 'C', false)">C) La filtration sur sable</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Les boues activées consistent à développer une biomasse active en suspension (flocs bactériens) nourrie par la pollution et stimulée par un apport continu d'oxygène.</div>
+    </div>
+
+    <div class="question-card" id="q43">
+        <div class="question-text">Q43. Pourquoi exige-t-on le maintien d'une concentration de "chlore résiduel" dans l'ensemble du réseau de distribution ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q43', 'A', false)">A) Pour neutraliser le goût de terre</button>
+            <button class="option-btn" onclick="check('q43', 'B', true)">B) Pour assurer la rémanence du pouvoir désinfectant face aux risques de pollution fortuite dans les conduites</button>
+            <button class="option-btn" onclick="check('q43', 'C', false)">C) Pour détruire le tartre</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le chlore résiduel garantit que l'eau reste saine et exempte de germes pathogènes tout au long de son parcours dans les kilomètres de canalisations jusqu'à l'abonné.</div>
+    </div>
+
+    <div class="question-card" id="q44">
+        <div class="question-text">Q44. Quel terme qualifie l'asphyxie d'un lac due à une présence excessive d'Azote et de Phosphore ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q44', 'A', false)">A) La lixiviation</button>
+            <button class="option-btn" onclick="check('q44', 'B', true)">B) L'eutrophisation</button>
+            <button class="option-btn" onclick="check('q44', 'C', false)">C) La nitrification</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> L'excès de nutriments provoque l'explosion des algues de surface, bloquant la lumière et consommant tout l'oxygène dissous, ce qui tue la faune aquatique.</div>
+    </div>
+
+    <div class="question-card" id="q45">
+        <div class="question-text">Q45. Quelle norme marocaine réglemente officiellement la potabilité des eaux de boisson ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q45', 'A', true)">A) NM 03.7.001</button>
+            <button class="option-btn" onclick="check('q45', 'B', false)">B) ISO 14001</button>
+            <button class="option-btn" onclick="check('q45', 'C', false)">C) NM 03.7.200</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> La norme NM 03.7.001 liste précisément les valeurs limites impératives (bactériologiques, chimiques, physiques) pour qu'une eau soit déclarée propre à la consommation au Maroc.</div>
+    </div>
+
+    <div class="question-card" id="q46">
+        <div class="question-text">Q46. Quel réactif chimique classique applique-t-on en coagulation pour déstabiliser les colloïdes turbides ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q46', 'A', true)">A) Le sulfate d'alumine</button>
+            <button class="option-btn" onclick="check('q46', 'B', false)">B) Le permanganate de potassium</button>
+            <button class="option-btn" onclick="check('q46', 'C', false)">C) L'ozone</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Le sulfate d'aluminium ($Al_2(SO_4)_3$) libère des ions $Al^{3+}$ qui neutralisent les charges négatives des impuretés, permettant leur agglomération en flocs lourds faciles à décanter.</div>
+    </div>
+
+    <div class="section-title">5. Institutionnel, Secteur de l'Eau & SRM au Maroc</div>
+
+    <div class="question-card" id="q47">
+        <div class="question-text">Q47. Que signifie la nouvelle structure institutionnelle SRM au Maroc ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q47', 'A', false)">A) Société de Réseau de Marrakech</button>
+            <button class="option-btn" onclick="check('q47', 'B', true)">B) Société Régionale Multi-services</button>
+            <button class="option-btn" onclick="check('q47', 'C', false)">C) Structure de Régulation Marocaine</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Les Sociétés Régionales Multi-services (SRM) sont les nouvelles entreprises de gestion publique introduites pour mutualiser les services de distribution d'eau, d'électricité et d'assainissement à l'échelle de chaque région.</div>
+    </div>
+
+    <div class="question-card" id="q48">
+        <div class="question-text">Q48. Quelle loi marocaine actuelle cadre l'ensemble de la gestion et de la préservation des ressources en eau ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q48', 'A', false)">A) La loi 10-95</button>
+            <button class="option-btn" onclick="check('q48', 'B', true)">B) La loi 36-15 sur l'Eau</button>
+            <button class="option-btn" onclick="check('q48', 'C', false)">C) La loi 78-00</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> La loi 36-15 a modernisé le cadre législatif de la loi 10-95 en renforçant la gouvernance, la gestion participative via les ABH et en ajoutant des règles sur la valorisation des eaux non conventionnelles.</div>
+    </div>
+
+    <div class="question-card" id="q49">
+        <div class="question-text">Q49. Quelle entité gère la ressource et délivre les autorisations de forages à l'échelle d'un bassin au Maroc ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q49', 'A', false)">A) La municipalité locale</button>
+            <button class="option-btn" onclick="check('q49', 'B', true)">B) L'Agence de Bassin Hydraulique (ABH)</button>
+            <button class="option-btn" onclick="check('q49', 'C', false)">C) L'ONEE</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Les ABH (ex: ABH Souss-Massa, ABH Sebou) sont des établissements publics dotés de la personnalité morale chargés de la planification, de la protection du domaine public hydraulique et du contrôle des prélèvements d'eau.</div>
+    </div>
+
+    <div class="question-card" id="q50">
+        <div class="question-text">Q50. Quel office historique produit l'eau potable en amont et gère les réseaux en milieu rural ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q50', 'A', false)">A) L'ANRT</button>
+            <button class="option-btn" onclick="check('q50', 'B', true)">B) L'ONEE (Branche Eau)</button>
+            <button class="option-btn" onclick="check('q50', 'C', false)">C) Le Ministère de la Santé</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> L'ONEE (Office National de l'Électricité et de l'Eau Potable) assure la production de masse (traitement de l'eau des barrages/nappes) et alimente les distributeurs (régies/SRM) en gros, en plus de son rôle en milieu rural.</div>
+    </div>
+
+    <div class="question-card" id="q51">
+        <div class="question-text">Q51. Quel texte législatif a officialisé la création des Sociétés Régionales Multi-services ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q51', 'A', true)">A) La loi n° 83-21</button>
+            <button class="option-btn" onclick="check('q51', 'B', false)">B) La loi n° 13-09</button>
+            <button class="option-btn" onclick="check('q51', 'C', false)">C) La loi n° 47-06</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> La loi 83-21 relative aux Sociétés Régionales Multi-services organise le transfert progressif des prérogatives de distribution des anciennes régies autonomes et concessions privées vers les nouvelles SRM régionales.</div>
+    </div>
+
+    <div class="question-card" id="q52">
+        <div class="question-text">Q52. Quelle filière technologique lourde se déploie à Casablanca et Agadir face à la pénurie d'eau douce ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q52', 'A', false)">A) Les barrages souterrains</button>
+            <button class="option-btn" onclick="check('q52', 'B', true)">B) Le dessalement d'eau de mer (Osmose inverse)</button>
+            <button class="option-btn" onclick="check('q52', 'C', false)">C) L'importation d'eau par navires</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Face au stress hydrique, le Maroc a lancé de grands chantiers de dessalement d'eau de mer (ex: Station d'Agadir Chtouka et le méga-projet de Casablanca) pour sécuriser l'approvisionnement en eau potable sans dépendre du ciel.</div>
+    </div>
+
+    <div class="section-title">6. Questions Flash, Topographie & Gestion des Réseaux</div>
+
+    <div class="question-card" id="q53">
+        <div class="question-text">Q53. En quoi consiste l'opération d'exploitation appelée "sectorisation" d'un réseau d'eau ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q53', 'A', true)">A) Isoler des mailles homogènes du réseau munies de compteurs pour calculer les rendements locaux et pister les fuites</button>
+            <button class="option-btn" onclick="check('q53', 'B', false)">B) Diviser les abonnés selon leur secteur d'activité</button>
+            <button class="option-btn" onclick="check('q53', 'C', false)">C) Différencier l'eau industrielle de l'eau potable</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Découper le réseau en secteurs étanches permet de suivre en continu le débit de nuit (débit minimum nocturne) pour localiser rapidement les casses sous terre.</div>
+    </div>
+
+    <div class="question-card" id="q54">
+        <div class="question-text">Q54. Quel récepteur de géodésie portable utilise le topographe pour obtenir un point topo centimétrique calé en coordonnées réelles ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q54', 'A', false)">A) Un GPS de randonnée basique</button>
+            <button class="option-btn" onclick="check('q54', 'B', true)">B) Un récepteur GNSS différentiel (mode RTK)</button>
+            <button class="option-btn" onclick="check('q54', 'C', false)">C) Un distancemètre portatif</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le GNSS différentiel (Real Time Kinematic) utilise les corrections d'une station pivot fixe ou d'un réseau d'antennes pour corriger les erreurs atmosphériques et offrir une précision au centimètre.</div>
+    </div>
+
+    <div class="question-card" id="q55">
+        <div class="question-text">Q55. Que désigne l'intégration fonctionnelle SIG-GMAO ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q55', 'A', true)">A) La liaison dynamique entre les entités de la carte (SIG) et leur historique de maintenance et d'interventions (GMAO)</button>
+            <button class="option-btn" onclick="check('q55', 'B', false)">B) Un algorithme de tracé 3D</button>
+            <button class="option-btn" onclick="check('q55', 'C', false)">C) Le calcul automatique du diamètre des conduites</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Lier le SIG à la GMAO (Gestion de la Maintenance Assistée par Ordinateur) permet de cliquer sur une conduite sur la carte pour voir sa date de pose, le nombre de fuites réparées et planifier les futurs chantiers de renouvellement.</div>
+    </div>
+
+    <div class="question-card" id="q56">
+        <div class="question-text">Q56. Quel organe hydraulique évacue les bulles d'air emprisonnées sur les points hauts d'un réseau ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q56', 'A', false)">A) Une vanne papillon</button>
+            <button class="option-btn" onclick="check('q56', 'B', true)">B) Une ventouse hydraulique automatique</button>
+            <button class="option-btn" onclick="check('q56', 'C', false)">C) Un té de purge</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> L'air accumulé réduit la section utile de la conduite et crée des pertes de charge. La ventouse purge cet air automatiquement lors de l'exploitation ou du remplissage.</div>
+    </div>
+
+    <div class="question-card" id="q57">
+        <div class="question-text">Q57. Quel équipement installe-t-on aux points bas d'un réseau pour éliminer les dépôts solides lourds ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q57', 'A', true)">A) Une vanne de vidange (ou de décharge)</button>
+            <button class="option-btn" onclick="check('q57', 'B', false)">B) Un réducteur de pression</button>
+            <button class="option-btn" onclick="check('q57', 'C', false)">C) Une crépine</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> Placée au point le plus bas du profil en long, la vanne de vidange permet d'évacuer les sables accumulés par décantation et de vider le réseau lors de réparations.</div>
+    </div>
+
+    <div class="question-card" id="q58">
+        <div class="question-text">Q58. Comment se calcule mathématiquement le rendement hydraulique global d'un réseau ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q58', 'A', false)">A) Pression max / Diamètre de la conduite</button>
+            <button class="option-btn" onclick="check('q58', 'B', true)">B) (Volume comptabilisé ou facturé / Volume mis en distribution) × 100</button>
+            <button class="option-btn" onclick="check('q58', 'C', false)">C) Nombre d'abonnés / Longueur du réseau</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le rendement mesure l'efficacité physique d'un réseau. La différence entre le volume introduit et le volume consommé représente les pertes par fuites réelles et les pertes commerciales.</div>
+    </div>
+
+    <div class="question-card" id="q59">
+        <div class="question-text">Q59. Quel plan réglementaire géo-référencé est dressé à la fin d'un chantier pour enregistrer la position exacte XYZ des ouvrages enterrés ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q59', 'A', false)">A) Le plan de projet initial</button>
+            <button class="option-btn" onclick="check('q59', 'B', true)">B) Le plan de récolement</button>
+            <button class="option-btn" onclick="check('q59', 'C', false)">C) Le schéma de principe</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Le plan de récolement est le document topo contractuel qui retranscrit fidèlement la position géométrique réelle des infrastructures après remblayage, indispensable pour l'intégration SIG.</div>
+    </div>
+
+    <div class="question-card" id="q60">
+        <div class="question-text">Q60. Quel outil d'analyse spatiale SIG génère une zone surfacique à distance paramétrée autour d'une entité ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q60', 'A', true)">A) La zone tampon (Buffer)</button>
+            <button class="option-btn" onclick="check('q60', 'B', false)">B) La requête attributaire</button>
+            <button class="option-btn" onclick="check('q60', 'C', false)">C) L'analyse de réseau (Network Analyst)</button>
+        </div>
+        <div class="solution-box"><strong>Solution : A</strong><br><strong>Explication :</strong> L'outil Zone Tampon (Buffer) calcule un polygone enveloppant un objet (point, ligne, surface) à une distance fixe ou variable (ex: bande de servitude de 10 m de part et d'autre d'une conduite).</div>
+    </div>
+
+    <div class="question-card" id="q61">
+        <div class="question-text">Q61. Qu'est-ce qu'une base de données relationnelle spatiale ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q61', 'A', false)">A) Un fichier texte structuré</button>
+            <button class="option-btn" onclick="check('q61', 'B', true)">B) Un SGBD capable de stocker, indexer et interroger des objets géométriques complexes via du SQL spatial (ex: PostGIS)</button>
+            <button class="option-btn" onclick="check('q61', 'C', false)">C) Une table de correspondance matricielle</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Les bases de données spatiales étendent le langage SQL classique avec des types géométriques (Point, LineString, Polygon) et des fonctions d'analyse topologique (ST_Distance, ST_Intersects).</div>
+    </div>
+
+    <div class="question-card" id="q62">
+        <div class="question-text">Q62. Dans le domaine de l'information géographique SIG, qu'est-ce qu'une métadonnée ?</div>
+        <div class="options-grid">
+            <button class="option-btn" onclick="check('q62', 'A', false)">A) Une table attributaire volumineuse</button>
+            <button class="option-btn" onclick="check('q62', 'B', true)">B) La donnée sur la donnée (carte d'identité décrivant la source, l'auteur, la date, l'échelle, le SCR)</button>
+            <button class="option-btn" onclick="check('q62', 'C', false)">C) Une coordonnée géographique erronée</button>
+        </div>
+        <div class="solution-box"><strong>Solution : B</strong><br><strong>Explication :</strong> Les métadonnées documentent les caractéristiques d'une couche d'information spatiale pour permettre aux utilisateurs d'évaluer sa pertinence, sa précision et sa date de mise à jour.</div>
+    </div>
+
+
+    <div class="evaluation-panel" id="final-panel">
+        <div class="evaluation-title">📊 ÉVALUATION GLOBALE & BILAN</div>
+        <div class="final-score-display"><span id="final-percent">0</span>%</div>
+        <div id="eval-badge" class="badge-eval badge-insuffisant">En attente de complétion</div>
+        <p id="eval-feedback" style="font-size: 1.1rem; color: #4b5563; font-weight: 500;">
+            Répondez aux questions ci-dessus pour afficher votre niveau de performance et votre note sur 20.
+        </p>
     </div>
 
     <div class="tips-box">
-        <h3>Conseils clés pour l'examen de la SRM :</h3>
+        <h3>💡 Conseils de Révision pour Loubna :</h3>
         <ul>
-            <li><strong>Les systèmes de coordonnées au Maroc :</strong> Révisez le système Merchich et le système RGM04 (Réseau Géodésique du Maroc), ainsi que les projections Lambert (Zones I, II, III, IV).</li>
-            <li><strong>La Topologie SIG :</strong> Rappelez-vous des règles topologiques essentielles pour les réseaux de services publics (pas de superpositions d'arcs, pas de nœuds pendants non justifiés, connexion obligatoire aux intersections).</li>
-            <li><strong>Gestion du temps :</strong> L'épreuve dure 2 heures. Ne perdez pas de temps sur un calcul bloquant, passez au suivant et revenez-y à la fin.</li>
+            <li><strong>Formules Clés :</strong> Mémorisez bien $Q = S \times V$, le calcul des surfaces de cellules, le rayon hydraulique ($R_h = \frac{S}{P_m}$), et les équivalences d'unités ($1\text{ ha} = 10\ 000\text{ m}^2$).</li>
+            <li><strong>Volet Institutionnel :</strong> Révisez bien les grandes lignes de la **loi 83-21** (SRM) car c'est le cœur de l'actualité de la modernisation des services de l'eau au Maroc.</li>
         </ul>
     </div>
 
-    <div class="footer-note">Bonne chance Loubna pour le concours ! 🚀</div>
+    <div class="footer">Allah iweffeq Loubna f had l-concours ! 🚀✨</div>
 </div>
 
 <script>
-function checkAnswer(questionId, optionLetter, isCorrect) {
-    const card = document.getElementById(questionId);
+// Base de données des réponses correctes pour validation
+const correctAnswers = {
+    'q1': 'A', 'q2': 'B', 'q3': 'C', 'q4': 'B', 'q5': 'A', 'q6': 'B', 'q7': 'A', 'q8': 'A', 'q9': 'B', 'q10': 'B',
+    'q11': 'A', 'q12': 'B', 'q13': 'C', 'q14': 'A', 'q15': 'A', 'q16': 'B', 'q17': 'A', 'q18': 'B', 'q19': 'B', 'q20': 'B',
+    'q21': 'A', 'q22': 'B', 'q23': 'B', 'q24': 'A', 'q25': 'B', 'q26': 'B', 'q27': 'A', 'q28': 'B', 'q29': 'B', 'q30': 'B',
+    'q31': 'B', 'q32': 'B', 'q33': 'A', 'q34': 'B', 'q35': 'A', 'q36': 'B', 'q37': 'B', 'q38': 'A', 'q39': 'B', 'q40': 'A',
+    'q41': 'A', 'q42': 'B', 'q43': 'B', 'q44': 'B', 'q45': 'A', 'q46': 'A', 'q47': 'B', 'q48': 'B', 'q49': 'B', 'q50': 'B',
+    'q51': 'A', 'q52': 'B', 'q53': 'A', 'q54': 'B', 'q55': 'A', 'q56': 'B', 'q57': 'A', 'q58': 'B', 'q59': 'B', 'q60': 'A',
+    'q61': 'B', 'q62': 'B'
+};
+
+let answeredCount = 0;
+let correctCount = 0;
+let wrongCount = 0;
+const totalQuestions = 62;
+
+function check(qId, letter, isCorrect) {
+    const card = document.getElementById(qId);
     const buttons = card.querySelectorAll('.option-btn');
     const solutionBox = card.querySelector('.solution-box');
 
+    // Bloquer le re-clic si la question est déjà répondue
+    if(buttons[0].disabled) return;
+
     buttons.forEach(btn => {
-        btn.disabled = true; // Désactiver les boutons après le clic
-        if (btn.innerText.startsWith(optionLetter)) {
+        btn.disabled = true; // Désactiver les choix
+        if (btn.innerText.startsWith(letter)) {
             if (isCorrect) {
                 btn.classList.add('correct');
             } else {
                 btn.classList.add('wrong');
             }
         }
-        // Afficher quand même le bouton correct si l'utilisateur s'est trompé
-        if (!isCorrect && btn.innerText.match(/^[A-C]\) /) && isButtonCorrect(questionId, btn.innerText[0])) {
+        // Afficher de toute façon la bonne réponse en vert
+        if (!isCorrect && btn.innerText.startsWith(correctAnswers[qId])) {
             btn.classList.add('correct');
         }
     });
 
-    // Afficher la solution détaillée
+    // Mise à jour des compteurs internes
+    answeredCount++;
+    if (isCorrect) {
+        correctCount++;
+    } else {
+        wrongCount++;
+    }
+
+    // Mise à jour de l'affichage en tête de page
+    document.getElementById('progress-text').innerText = `${answeredCount} / ${totalQuestions}`;
+    document.getElementById('correct-text').innerText = correctCount;
+    document.getElementById('wrong-text').innerText = wrongCount;
+
+    // Afficher le volet d'explications/solutions
     solutionBox.style.display = 'block';
+
+    // Recalculer l'évaluation finale à chaque clic
+    updateEvaluation();
 }
 
-function isButtonCorrect(qId, letter) {
-    const correctAnswers = {
-        'q1': 'B', 'q2': 'B', 'q3': 'A', 'q4': 'B',
-        'q5': 'A', 'q6': 'A', 'q7': 'A', 'q8': 'A'
-    };
-    return correctAnswers[qId] === letter;
+function updateEvaluation() {
+    const percentage = Math.round((correctCount / totalQuestions) * 100);
+    const noteSur20 = ((correctCount / totalQuestions) * 20).toFixed(2);
+    
+    document.getElementById('final-percent').innerText = percentage;
+    
+    const badge = document.getElementById('eval-badge');
+    const feedback = document.getElementById('eval-feedback');
+    
+    if (answeredCount < 15) {
+        badge.className = "badge-eval badge-insuffisant";
+        badge.innerText = "Début du test";
+        feedback.innerText = `Continuez ainsi ! Note actuelle équivalente à : ${noteSur20}/20.`;
+    } else {
+        if (percentage >= 80) {
+            badge.className = "badge-eval badge-excellent";
+            badge.innerText = "Excellent / Très bon niveau !";
+            feedback.innerHTML = `🌟 <strong>Note : ${noteSur20} / 20</strong><br>Loubna est parfaitement prête pour affronter les épreuves techniques et SIG du concours de la SRM ! Excellente maîtrise des concepts !`;
+        } else if (percentage >= 50) {
+            badge.className = "badge-eval badge-moyen";
+            badge.innerText = "Admissible / Niveau Moyen";
+            feedback.innerHTML = `👍 <strong>Note : ${noteSur20} / 20</strong><br>Bonne progression. Relisez attentivement les calculs de débits hydrauliques et la topologie spatiale pour optimiser votre score d'admission !`;
+        } else {
+            badge.className = "badge-eval badge-insuffisant";
+            badge.innerText = "Niveau Insuffisant pour l'instant";
+            feedback.innerHTML = `⚠️ <strong>Note : ${noteSur20} / 20</strong><br>Il est recommandé de revoir les définitions géodésiques marocaines (Merchich, RGM04) ainsi que les règles fondamentales d'autocurage en assainissement. Recommencez l'entraînement !`;
+        }
+    }
 }
 </script>
 
